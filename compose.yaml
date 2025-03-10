@@ -1,0 +1,36 @@
+version: '3'
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=kamal
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express:latest
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=kamal
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+  backend:
+    container_name: interview-task-backend
+    image: interview-task-backend:latest
+    environment:
+      - PORT=5000
+      - DB_URL=mongodb://admin:kamal@mongodb
+    ports:
+      - 5000:5000
+    depends_on:
+      - mongodb
+  frontend:
+    container_name: interview-task-frontend
+    image: interview-task-frontend:latest
+    ports:
+      - 5173:80
+    depends_on:
+      - backend
