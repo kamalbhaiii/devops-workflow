@@ -36,3 +36,5 @@ services:
       - 5173:80
     depends_on:
       - backend
+volumes:
+  mongoDbData:
