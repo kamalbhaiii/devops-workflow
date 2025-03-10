@@ -4,7 +4,7 @@ pipeline {
     stages{
         stage("Checkout git") {
             steps{
-                git branch='master', url='https://github.com/kamalbhaiii/interview-task.git'
+                git branch:'master', url:'https://github.com/kamalbhaiii/interview-task.git'
             }
         }
         stage('Stop running containers of compose') {
