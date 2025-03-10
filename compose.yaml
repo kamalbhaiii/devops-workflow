@@ -3,13 +3,13 @@ services:
   mongodb:
     container_name: mongodb
     image: mongo:latest
+    volumes:
+      - mongoDbData:/data/db
     ports:
       - 27017:27017
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=kamal
-    volumes:
-      - mongoDbData:/data/db
   mongo-express:
     container_name: mongo-express
     image: mongo-express:latest
