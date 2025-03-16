@@ -57,9 +57,9 @@ pipeline {
                 bat 'docker rmi %FRONTEND_IMAGE%:%IMAGE_TAG% || exit 0'
             }
         }
-        stage('Run compose file') {
+        stage('Run all k8s files file') {
             steps {
-                bat 'docker-compose -f docker-compose.yaml up -d'
+                bat 'kubectl apply -f k8s/'
             }
         }
     }
