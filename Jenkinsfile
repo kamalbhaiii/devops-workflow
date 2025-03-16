@@ -1,36 +1,65 @@
 pipeline {
     agent any
+    
+    environment {
+        DOCKERHUB_CREDENTIALS = 'dockerhub'
+        FRONTEND_IMAGE = 'kamalbhaiii/frontend'
+        BACKEND_IMAGE = 'kamalbhaiii/backend'
+        IMAGE_TAG = 'latest'
+    }
 
     stages{
-        stage("Checkout git") {
+        stage('Checkout Code') {
             steps{
-                git branch:'master', url:'https://github.com/kamalbhaiii/interview-task.git'
+                git 'https://github.com/kamalbhaiii/interview-task.git'
             }
         }
-        stage('Stop running containers of compose') {
+        stage('Remove Images locally') {
             steps {
-                bat 'docker-compose -f compose.yaml down'
+                bat 'docker rmi backend:${IMAGE_TAG} || TRUE'
+                bat 'docker rmi frontend:${IMAGE_TAG} || TRUE'
+                bat 'docker rmi ${BACKEND_IMAGE}:${IMAGE_TAG} || TRUE'
+                bat 'docker rmi ${FRONTEND_IMAGE}:${IMAGE_TAG} || TRUE'
             }
         }
-        stage('Remove all images') {
+        stage('Build image') {
             steps {
-                bat 'docker rmi mongo:latest || TRUE'
-                bat 'docker rmi mongo-express ||TRUE'
-                bat 'docker rmi interview-task-backend || TRUE'
-                bat 'docker rmi interview-task-frontend || TRUE' 
+                bat 'docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} /backend'
+                bat 'docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} /frontend'
             }
         }
-        stage('Build and Pull the required images') {
-            steps {
-                bat 'docker pull mongo:latest'
-                bat 'docker pull mongo-express:latest'
-                bat 'docker build -t interview-task-frontend ./frontend'
-                bat 'docker build -t interview-task-backend ./backend'
+        stage('Docker login') {
+            steps{
+                script {
+                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    }
+                }
             }
         }
-        stage('Run docker compose file'){
+        stage ('Push Backend Image') {
             steps {
-                bat 'docker-compose -f compose.yaml up -d'
+                bat 'docker tag backend:${IMAGE_TAG} ${BACKEND_IMAGE}:${IMAGE_TAG}'
+                bat 'docker push ${BACKEND_IMAGE}:${IMAGE_TAG}'
+            }
+        }
+        stage ('Push Frontend Image') {
+            steps {
+                bat 'docker tag frontend:${IMAGE_TAG} ${FRONTEND_IMAGE}:${IMAGE_TAG}'
+                bat 'docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}'
+            }
+        }
+        stage ('Remove images') {
+            steps {
+                bat 'docker rmi backend:${IMAGE_TAG} || TRUE'
+                bat 'docker rmi frontend:${IMAGE_TAG} || TRUE'
+                bat 'docker rmi ${BACKEND_IMAGE}:${IMAGE_TAG} || TRUE'
+                bat 'docker rmi ${FRONTEND_IMAGE}:${IMAGE_TAG} || TRUE'
+            }
+        }
+        stage('Run compose file') {
+            steps {
+                bat 'docker-compose -f docker-compose.yaml up -d'
             }
         }
     }

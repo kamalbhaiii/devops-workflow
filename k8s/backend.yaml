@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+      - name: mongo-wait
+        image: busybox:latest
+        command:
+        - /bin/sh
+        - -c
+        - "until nc -z mongo-service 27017; do echo waiting for mongo; sleep 2; done;"
+      containers:
+      - name: backend
+        image: kamalbhaiii/backend:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_URL
+          value: "mongodb://admin:kamal@mongo-service:27017"
+        - name: PORT
+          value: "5000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: LoadBalancer

@@ -9,8 +9,6 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
-mongoose.connect(`${process.env.DB_URL}`)
-
 const UserSchema = new mongoose.Schema({ username: String, email: String, password: String });
 const User = mongoose.model("User", UserSchema);
 
@@ -36,6 +34,11 @@ app.post("/signup", async (req,res) => {
     }
 })
 
-app.listen(process.env.PORT, ()=>{
-    console.log(`Server is listening on port ${process.env.PORT}`)
+
+mongoose.connect(`${process.env.DB_URL}`).then(()=>{
+    app.listen(process.env.PORT, () => {
+        console.log(`Server is listening on port ${process.env.PORT}`)
+    })
+}).catch((err)=>{
+    console.log(err)
 })
