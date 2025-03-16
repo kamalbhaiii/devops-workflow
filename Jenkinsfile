@@ -24,8 +24,8 @@ pipeline {
         }
         stage('Build image') {
             steps {
-                bat 'docker build -t %BACKEND_IMAGE%:%IMAGE_TAG% ./backend'
-                bat 'docker build -t %FRONTEND_IMAGE%:%IMAGE_TAG% ./frontend'
+                bat 'docker build -t backend:%IMAGE_TAG% ./backend'
+                bat 'docker build -t frontend:%IMAGE_TAG% ./frontend'
             }
         }
         stage('Docker login') {
