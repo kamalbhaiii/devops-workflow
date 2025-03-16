@@ -16,10 +16,10 @@ pipeline {
         }
         stage('Remove Images locally') {
             steps {
-                bat 'docker rmi backend:%IMAGE_TAG% || TRUE'
-                bat 'docker rmi frontend:%IMAGE_TAG% || TRUE'
-                bat 'docker rmi %BACKEND_IMAGE%:%IMAGE_TAG% || TRUE'
-                bat 'docker rmi %FRONTEND_IMAGE%:%IMAGE_TAG% || TRUE'
+                bat 'docker rmi backend:%IMAGE_TAG% || exit 0'
+                bat 'docker rmi frontend:%IMAGE_TAG% || exit 0'
+                bat 'docker rmi %BACKEND_IMAGE%:%IMAGE_TAG% || exit 0'
+                bat 'docker rmi %FRONTEND_IMAGE%:%IMAGE_TAG% || exit 0'
             }
         }
         stage('Build image') {
@@ -51,10 +51,10 @@ pipeline {
         }
         stage ('Remove images') {
             steps {
-                bat 'docker rmi backend:%IMAGE_TAG% || TRUE'
-                bat 'docker rmi frontend:%IMAGE_TAG% || TRUE'
-                bat 'docker rmi %BACKEND_IMAGE%:%IMAGE_TAG% || TRUE'
-                bat 'docker rmi %FRONTEND_IMAGE%:%IMAGE_TAG% || TRUE'
+                bat 'docker rmi backend:%IMAGE_TAG% || exit 0'
+                bat 'docker rmi frontend:%IMAGE_TAG% || exit 0'
+                bat 'docker rmi %BACKEND_IMAGE%:%IMAGE_TAG% || exit 0'
+                bat 'docker rmi %FRONTEND_IMAGE%:%IMAGE_TAG% || exit 0'
             }
         }
         stage('Run compose file') {
