@@ -59,10 +59,11 @@ pipeline {
         }
         stage('Run all k8s files file') {
             script{
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    bat 'kubectl apply -f k8s/'
+                steps {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        bat 'kubectl apply -f k8s/'
+                    }
                 }
-
             }
         }
     }
