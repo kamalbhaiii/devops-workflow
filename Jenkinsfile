@@ -65,6 +65,8 @@ pipeline {
                         bat 'kubectl apply -f k8s/'
                         bat 'kubectl rollout status deployment/backend --timeout=180s'
                         bat 'kubectl rollout status deployment/frontend --timeout=180s'
+                        bat 'taskkill /F /PID $(netstat -ano | findstr ":5000" | awk "{print $5}") || exit 0'
+                        bat 'taskkill /F /PID $(netstat -ano | findstr ":5173" | awk "{print $5}") || exit 0'
                         bat 'start /B kubectl port-forward service/backend-service 5000:5000 &'
                         bat 'start /B kubectl port-forward service/frontend-service 5173:5173 &'
                     }
