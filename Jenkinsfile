@@ -14,6 +14,14 @@ pipeline {
                 git 'https://github.com/kamalbhaiii/interview-task.git'
             }
         }
+        stage('Setup Prometheus and Grafana') {
+            steps {
+                bat 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
+                bat 'helm repo update'
+                bat 'kubectl create namespace monitoring'
+                bat 'helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring'
+            }
+        }
         stage('Remove Images locally') {
             steps {
                 bat 'docker rmi backend:%IMAGE_TAG% || exit 0'
