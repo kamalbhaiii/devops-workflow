@@ -61,7 +61,6 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        bat 'minikube stop && minikube start'
                         bat 'kubectl apply -f k8s/'
                         bat 'kubectl rollout status deployment/backend --timeout=180s'
                         bat 'kubectl rollout status deployment/frontend --timeout=180s'
