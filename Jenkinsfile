@@ -62,6 +62,8 @@ pipeline {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                         bat 'kubectl apply -f k8s/'
+                        bat 'kubectl port-forward service/backend-service 5000:5000 &'
+                        bat 'kubectl port-forward service/frontend-service 5173:5173 &'
                     }
                 }
             }
